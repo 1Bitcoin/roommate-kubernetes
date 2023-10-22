@@ -90,6 +90,16 @@ kubectl get secret loki-grafana -o go-template='{{range $k,$v := .data}}{{printf
 helm uninstall loki
 ```
 
+Перейти в директорию [balancer](balancer)
+
+```
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+helm install ingress-nginx ingress-nginx/ingress-nginx
+
+kubectl apply -f ingress.yaml
+```
+
 Перейти в директорию [storage](storage)
 
 ```
