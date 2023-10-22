@@ -42,8 +42,6 @@ sudo systemctl restart kubelet
 
 ## Установка сервисов в кластер
 
-loki stack
-
 Перейти в директорию [observability](observability)
 
 Монтируем тома для хранения логов, метрик
@@ -92,8 +90,6 @@ kubectl get secret loki-grafana -o go-template='{{range $k,$v := .data}}{{printf
 helm uninstall loki
 ```
 
-Postgres
-
 Перейти в директорию [storage](storage)
 
 ```
@@ -101,15 +97,11 @@ kubectl apply -f secrets.yaml
 kubectl apply -f postgres-service.yaml
 ```
 
-Redis
-
 Перейти в директорию [redis](redis)
 
 ```
 kubectl apply -f redis-service.yaml
 ```
-
-Pgadmin
 
 Перейти в директорию [pgadmin](pgadmin)
 
@@ -118,8 +110,6 @@ kubectl apply -f secrets.yaml
 kubectl apply -f pgadmin-service.yaml
 ```
 
-Other
-
 Перейти в директорию [other](other)
 
 ```
@@ -127,18 +117,12 @@ kubectl apply -f bot-secrets.yaml
 kubectl apply -f sender-secrets.yaml
 ```
 
-Minio
-
 Перейти в директорию [minio](minio)
 
 ```
 kubectl apply -f secrets.yaml
 kubectl apply -f minio-service.yaml
 ```
-
-Приложение
-
-Выполнить сборку приложения TODO!!!
 
 Перейти в директорию [application](application)
 
