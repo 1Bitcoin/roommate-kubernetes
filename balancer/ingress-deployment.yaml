@@ -1,3 +1,26 @@
+kind: IPAddressPool
+metadata:
+  name: pool
+  namespace: metallb-system
+  labels:
+    stand: local
+spec:
+  addresses:
+    - BALANCER_IP-BALANCER_IP
+
+---
+
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: l2
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+    - pool
+
+---
+
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -7,7 +30,7 @@ metadata:
     nginx.org/websocket-services: "roommate-service,minio-service"
 spec:
   rules:
-    - host: dev1-console-minio.roommate.local
+    - host: console-minio.prod.roommate.host
       http:
         paths:
           - path: /
@@ -18,7 +41,7 @@ spec:
                 port:
                   number: 9001
 
-    - host: dev1-console-pgadmin.roommate.local
+    - host: console-pgadmin.prod.roommate.host
       http:
         paths:
           - path: /
@@ -29,7 +52,7 @@ spec:
                 port:
                   number: 80
 
-    - host: api.roommate.local
+    - host: api.prod.roommate.host
       http:
         paths:
           - path: /
@@ -47,7 +70,7 @@ spec:
                 port:
                   number: 8080
 
-    - host: dev1-console-monitoring.roommate.local
+    - host: console-monitoring.prod.roommate.host
       http:
         paths:
           - path: /
