@@ -7,7 +7,7 @@ metadata:
     stand: local
 spec:
   addresses:
-    - BALANCER_IP-BALANCER_IP
+    - 94.131.114.240-94.131.114.240
 
 ---
 
