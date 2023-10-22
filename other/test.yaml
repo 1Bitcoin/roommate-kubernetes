@@ -1,0 +1,10 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-egress-587
+spec:
+  podSelector: {}
+  egress:
+    - ports:
+      - protocol: TCP
+        port: 587

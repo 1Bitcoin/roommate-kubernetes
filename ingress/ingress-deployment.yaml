@@ -1,0 +1,59 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web-app
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.org/websocket-services: "roommate-service,minio-service"
+spec:
+  rules:
+    - host: dev1-console-minio.roommate.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: minio-service
+                port:
+                  number: 9001
+
+    - host: dev1-console-pgadmin.roommate.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: pgadmin
+                port:
+                  number: 80
+
+    - host: api.roommate.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: roommate-service
+                port:
+                  number: 8080
+          - path: /wss
+            pathType: Prefix
+            backend:
+              service:
+                name: roommate-service
+                port:
+                  number: 8080
+
+    - host: dev1-console-monitoring.roommate.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: loki-grafana
+                port:
+                  number: 3000

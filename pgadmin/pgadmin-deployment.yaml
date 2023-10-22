@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgadmin
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pgadmin
+  template:
+    metadata:
+      labels:
+        app: pgadmin
+    spec:
+      containers:
+        - image: dpage/pgadmin4:7.2
+          imagePullPolicy: IfNotPresent
+          name: pgadmin
+          envFrom:
+            - secretRef:
+                name: pgadmin-secrets
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              memory: 2048Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: pgadmin
+  name: pgadmin
+  namespace: default
+spec:
+  selector:
+    app: pgadmin
+  ports:
+    - name: pgadmin-port
+      port: 80
+      targetPort: 80
