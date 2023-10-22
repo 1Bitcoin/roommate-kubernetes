@@ -14,12 +14,11 @@ spec:
     spec:
       containers:
         - name: roommate-app
-          image: zhigalkin/roommate:D-01.001.00-202
+          image: qwerty467/roommate-backend:D-01.001.00-221
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
             - containerPort: 5005
-            - containerPort: 587
           envFrom:
             - secretRef:
                 name: postgres-secrets
@@ -51,9 +50,5 @@ spec:
       protocol: TCP
       port: 8080
       targetPort: 8080
-    - name: smtp-port
-      protocol: TCP
-      port: 587
-      targetPort: 587
   selector:
     app: roommate-app
