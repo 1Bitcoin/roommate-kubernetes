@@ -125,6 +125,7 @@ kubectl apply -f pgadmin-service.yaml
 ```
 kubectl apply -f bot-secrets.yaml
 kubectl apply -f sender-secrets.yaml
+kubectl apply -f jwt-secrets.yaml
 ```
 
 Перейти в директорию [minio](minio)
