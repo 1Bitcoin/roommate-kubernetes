@@ -28,6 +28,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.org/websocket-services: "roommate-service,minio-service"
+    nginx.ingress.kubernetes.io/proxy-body-size: 20m
 spec:
   rules:
     - host: console-minio.prod.roommate.host
