@@ -1,3 +1,45 @@
+## Установка кластера на чистом железе
+
+https://help.reg.ru/support/servery-vps/oblachnyye-servery/ustanovka-programmnogo-obespecheniya/rukovodstvo-po-kubernetes
+
+### Проблема 1
+
+После установки кластера, будет периодически отвалиться flannel, 
+на мастер-ноде невозможно выполнить команды, недоступен 6443 порт
+
+Решение
+
+![img.png](readme-png/img-1.png)
+
+Затем выполнить:
+
+```
+sudo systemctl restart containerd
+sudo systemctl restart kubelet
+```
+
+### Проблема 2
+
+При попытке доступа в сеть из кластера (в примере попытка доступа к smtp) может возникнуть проблема из-за неверного dns:
+
+![img.png](readme-png/img-2.png)
+
+В примере к name добавляется .DOMAINS и получается неверный адрес
+
+Необходимо удалить строчку из resolv.conf
+
+```
+search DOMAINS
+```
+
+![img.png](readme-png/img-3.png)
+
+После редактирования сохранить и выполнить:
+
+```
+sudo systemctl restart kubelet
+```
+
 ## Установка сервисов в кластер
 
 loki stack
