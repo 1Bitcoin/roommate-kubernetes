@@ -1,0 +1,82 @@
+kind: IPAddressPool
+metadata:
+  name: pool
+  namespace: metallb-system
+  labels:
+    stand: local
+spec:
+  addresses:
+    - BALANCER_IP-BALANCER_IP
+
+---
+
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: l2
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+    - pool
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web-app
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.org/websocket-services: "roommate-service,minio-service"
+spec:
+  rules:
+    - host: console-minio.prod.roommate.host
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: minio-service
+                port:
+                  number: 9001
+
+    - host: console-pgadmin.prod.roommate.host
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: pgadmin
+                port:
+                  number: 80
+
+    - host: api.prod.roommate.host
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: roommate-service
+                port:
+                  number: 8080
+          - path: /wss
+            pathType: Prefix
+            backend:
+              service:
+                name: roommate-service
+                port:
+                  number: 8080
+
+    - host: console-monitoring.prod.roommate.host
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: loki-grafana
+                port:
+                  number: 3000

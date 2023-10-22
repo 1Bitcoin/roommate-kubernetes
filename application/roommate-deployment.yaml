@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: roommate-app
+spec:
+  selector:
+    matchLabels:
+      app: roommate-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: roommate-app
+    spec:
+      containers:
+        - name: roommate-app
+          image: zhigalkin/roommate:D-01.001.00-202
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+            - containerPort: 5005
+            - containerPort: 587
+          envFrom:
+            - secretRef:
+                name: postgres-secrets
+
+            - secretRef:
+                name: minio-secrets
+
+            - secretRef:
+                name: bot-secrets
+
+            - secretRef:
+                name: sender-secrets
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: /metrics
+    prometheus.io/port: "8080"
+  name: roommate-service
+  labels:
+    name: roommate-app
+spec:
+  ports:
+    - name: roommate-port
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+    - name: smtp-port
+      protocol: TCP
+      port: 587
+      targetPort: 587
+  selector:
+    app: roommate-app
