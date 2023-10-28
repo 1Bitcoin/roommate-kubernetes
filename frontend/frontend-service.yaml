@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-app
+spec:
+  selector:
+    matchLabels:
+      app: frontend-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: frontend-app
+    spec:
+      containers:
+        - name: frontend-app
+          image: qwerty467/roommate-front:17
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: frontend-service
+  labels:
+    name: frontend-app
+spec:
+  ports:
+    - name: frontend-port
+      protocol: TCP
+      port: 80
+      targetPort: 80
+  selector:
+    app: frontend-app
