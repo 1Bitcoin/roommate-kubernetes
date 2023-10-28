@@ -143,27 +143,7 @@ kubectl apply -f roommate-service.yaml
 
 ## Установка cert-manager
 
-https://habr.com/ru/articles/668098/
-
-```
-helm repo add jetstack https://charts.jetstack.io
-helm repo update
-helm install cert-manager jetstack/cert-manager --version v1.8.0 --set installCRDs=true
-```
-
-### Настройка cert-manager на использование Let’s Encrypt в качестве эмитента сертификатов
-
-У Let’s Encrypt есть два окружения: staging и production. 
-Продуктовый имеет очень строгий лимит на количество запросов. Поэтому, пока вы не будете до конца уверены, что 
-всё у вас работает устойчиво, лучше пользоваться staging окружением.
-
-Перейти в директорию [cert-manager](cert-manager)
-
-```
-kubectl apply -f letsencrypt-staging.yaml
-kubectl get issuers
-```
-
+TODO инструкция от Георгия
 
 
 ## Режим debug
