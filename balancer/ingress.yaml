@@ -30,20 +30,8 @@ metadata:
     kubernetes.io/ingress.class: nginx
     nginx.org/websocket-services: "roommate-service,minio-service"
     nginx.ingress.kubernetes.io/proxy-body-size: 20m
-#    cert-manager.io/issuer: letsencrypt-production
 spec:
   rules:
-    - host: dev.roommate.host
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: frontend-service
-                port:
-                  number: 80
-
     - host: console-minio.prod.roommate.host
       http:
         paths:
@@ -95,7 +83,13 @@ spec:
                 port:
                   number: 3000
 
-#  tls:
-#    - hosts:
-#        - dev.roommate.host
-#      secretName: test-ingress-app-production
+    - host: dev.roommate.host
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend-service
+                port:
+                  number: 80
