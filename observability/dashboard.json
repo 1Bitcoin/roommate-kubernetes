@@ -27,7 +27,7 @@
   "gnetId": 17175,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1697366909707,
+  "iteration": 1699116574562,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -138,18 +138,21 @@
                 "value": null
               },
               {
+                "color": "#EAB839",
+                "value": 500
+              },
+              {
                 "color": "red",
-                "value": 80
+                "value": 1000
               }
             ]
-          },
-          "unit": "short"
+          }
         },
         "overrides": []
       },
       "gridPos": {
         "h": 8,
-        "w": 11,
+        "w": 18,
         "x": 6,
         "y": 0
       },
@@ -175,15 +178,103 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "request_duration_histogram_count{service=\"roommate-service\"}",
+          "expr": "requests_total{service=\"roommate-service\"}",
           "interval": "",
           "legendFormat": "{{path}}",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Общее количество запросов",
+      "title": "Общее количество запросов за все время",
       "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 27,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "(rate(request_duration_summary{service=\"roommate-service\"}[2m]) * 60)",
+          "interval": "",
+          "legendFormat": "{{path}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Длительность выполнения запросов за последние 2 минуты (в секундах)",
+      "type": "timeseries"
     },
     {
       "datasource": {
@@ -231,6 +322,10 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 100
               }
             ]
           },
@@ -240,9 +335,9 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 7,
-        "x": 17,
-        "y": 0
+        "w": 12,
+        "x": 12,
+        "y": 8
       },
       "id": 20,
       "options": {
@@ -265,22 +360,22 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum by (path) (rate(request_duration_histogram_bucket{service=\"roommate-service\"}[2m]))",
+          "expr": "sum by (path) (rate(requests_total{service=\"roommate-service\"}[2m]) * 60)",
           "interval": "",
           "legendFormat": "{{path}}",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": " Длительность запроса (сумма)",
+      "title": "Количество запросов за последние 2 минуты",
       "type": "timeseries"
     },
     {
       "gridPos": {
-        "h": 13,
+        "h": 5,
         "w": 24,
         "x": 0,
-        "y": 8
+        "y": 16
       },
       "id": 2,
       "options": {
@@ -309,7 +404,7 @@
           "refId": "A"
         }
       ],
-      "title": "Log of All Spring Boot Apps",
+      "title": "Логи (открывать через explore)",
       "transformations": [
         {
           "id": "extractFields",
@@ -323,7 +418,7 @@
       "type": "logs"
     }
   ],
-  "refresh": "",
+  "refresh": "5s",
   "schemaVersion": 34,
   "style": "dark",
   "tags": [],
@@ -341,25 +436,6 @@
           "uid": "PBFA97CFB590B2093"
         },
         "definition": "label_values(application)",
-        "error": {
-          "config": {
-            "headers": {
-              "X-Grafana-Org-Id": 1
-            },
-            "hideFromInspector": true,
-            "method": "GET",
-            "retry": 0,
-            "url": "api/datasources/proxy/2/api/v1/label/application/values?start=1697366610&end=1697366910"
-          },
-          "data": {
-            "error": "",
-            "message": "",
-            "response": ""
-          },
-          "message": "Query error: 502 ",
-          "status": 502,
-          "statusText": ""
-        },
         "hide": 0,
         "includeAll": false,
         "label": "Application Name",
@@ -407,6 +483,6 @@
   "timezone": "",
   "title": "Spring Boot Observability",
   "uid": "dLsDQIUnzb",
-  "version": 2,
+  "version": 16,
   "weekStart": ""
 }

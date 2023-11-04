@@ -141,6 +141,12 @@ kubectl apply -f minio-service.yaml
 kubectl apply -f roommate-service.yaml
 ```
 
+Перейти в директорию [frontend](frontend)
+
+```
+kubectl apply -f frontend-service.yaml
+```
+
 ## Установка cert-manager
 
 TODO инструкция от Георгия
