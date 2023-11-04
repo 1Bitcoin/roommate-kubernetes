@@ -27,7 +27,7 @@
   "gnetId": 17175,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1699116574562,
+  "iteration": 1699116921584,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -481,8 +481,8 @@
   },
   "timepicker": {},
   "timezone": "",
-  "title": "Spring Boot Observability",
+  "title": "Мониторинг приложения",
   "uid": "dLsDQIUnzb",
-  "version": 16,
+  "version": 19,
   "weekStart": ""
 }
