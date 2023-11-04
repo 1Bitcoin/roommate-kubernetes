@@ -149,7 +149,86 @@ kubectl apply -f frontend-service.yaml
 
 ## Установка cert-manager
 
-TODO инструкция от Георгия
+Создать отдельный namespace для Cert-Manager
+`kubectl create namespace cert-manager`
+
+Добавить helm-репозиторий Jetstack и обновить его
+```
+helm repo add jetstack https://charts.jetstack.io
+helm repo update
+```
+
+Установить Cert-Manager в namespace cert-mamager. Актуальную версию уточнить в [ArtifactHub](https://artifacthub.io/packages/helm/cert-manager/cert-manager)
+`helm install cert-manager jetstack/cert-manager --namespace cert-manager --version v1.13.2 --set installCRDs=true` 
+
+Создать объект типа ClusterIssuer, который будет запрашивать сертификаты у LetsEncrypt
+`nano production_issuer.yaml`
+
+```
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    # Email address used for ACME registration
+    email: your_email_address
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      # Name of a secret used to store the ACME account private key
+      name: letsencrypt-prod-private-key
+    # Add a single challenge solver, HTTP01 using nginx
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
+```
+
+Заполнить поле 'email', на который будут приходить уведомления об окончании срока действия сертификатов
+
+Создать объект в кластере кубернетес
+`kubectl apply -f production_issuer.yaml`
+
+Отредактировать манифест Ingress, чтобы связать CertManager и ClusterIssuer с хостами Ingress
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+name: hello-kubernetes-ingress
+annotations:
+  kubernetes.io/ingress.class: nginx
+  cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  tls:
+  - hosts:
+    - hw1.your_domain
+    - hw2.your_domain
+    secretName: ingress-roommate-tls
+  rules:
+  - host: "hw1.your_domain_name"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: service-first
+            port:
+              number: 80
+  - host: "hw2.your_domain_name"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: service-second
+            port:
+              number: 80
+```
+
+Статус сертификатов можно посмотреть через команду
+`kubectl describe certificate ingress-roommate-tls`
 
 
 ## Режим debug
