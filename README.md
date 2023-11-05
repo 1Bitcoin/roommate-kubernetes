@@ -153,6 +153,7 @@ kubectl apply -f frontend-service.yaml
 
 `kubectl create namespace cert-manager`
 
+
 Добавить helm-репозиторий Jetstack и обновить его
 ```
 helm repo add jetstack https://charts.jetstack.io
@@ -163,11 +164,13 @@ helm repo update
 
 `helm install cert-manager jetstack/cert-manager --namespace cert-manager --version v1.13.2 --set installCRDs=true` 
 
-Создать объект типа ClusterIssuer, который будет запрашивать сертификаты у LetsEncrypt
+
+Создать объект типа ClusterIssuer, который будет запрашивать сертификаты у LetsEncrypt:
 
 `nano production_issuer.yaml`
 
-Заполнить поле "email", на который будут приходить уведомления об окончании срока действия сертификатов.
+
+Заполнить поле "email", на который будут приходить уведомления об окончании срока действия сертификатов:
 
 ```
 apiVersion: cert-manager.io/v1
@@ -189,11 +192,12 @@ spec:
           class: nginx
 ```
 
-Создать объект в кластере кубернетес
+Создать объект в кластере кубернетес:
 
 `kubectl apply -f production_issuer.yaml`
 
-Отредактировать манифест Ingress, чтобы связать CertManager и ClusterIssuer с хостами Ingress через Annotation: `annotations.cert-manager.io/cluster-issuer: letsencrypt-prod`. Значение `letsencrypt-prod` берется из манифеста `production_issuer.yaml`: `metadata. name`.  
+
+Отредактировать манифест Ingress, чтобы связать CertManager и ClusterIssuer с хостами Ingress через Annotation: `annotations.cert-manager.io/cluster-issuer: letsencrypt-prod`. Значение `letsencrypt-prod` берется из манифеста `production_issuer.yaml`: `metadata.name`.  
 
 ```
 apiVersion: networking.k8s.io/v1
@@ -232,7 +236,8 @@ spec:
               number: 80
 ```
 
-Статус сертификатов можно посмотреть через команду
+
+Статус сертификатов можно посмотреть через команду:
 
 `kubectl describe certificate ingress-roommate-tls`
 
