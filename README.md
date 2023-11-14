@@ -100,16 +100,6 @@ kubectl get secret loki-grafana -o go-template='{{range $k,$v := .data}}{{printf
 helm uninstall loki
 ```
 
-Перейти в директорию [balancer](balancer)
-
-```
-helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-helm repo update
-helm install ingress-nginx ingress-nginx/ingress-nginx
-
-kubectl apply -f ingress.yaml
-```
-
 Перейти в директорию [storage](storage)
 
 ```
@@ -159,11 +149,21 @@ kubectl apply -f frontend-service.yaml
 
 ## Установка cert-manager
 
+Перейти в директорию [balancer](balancer)
+
+```
+helm repo add stable https://charts.helm.sh/stable
+helm repo update
+helm install nginx-ingress ingress-nginx/ingress-nginx --set controller.service.externalIPs[0]=INPUT_EXTERNAL_IP
+
+kubectl apply -f ingress.yaml
+```
+
 Создать отдельный namespace для Cert-Manager:
 
-`kubectl create namespace cert-manager`
-
-
+```
+kubectl create namespace cert-manager
+```
 
 Добавить helm-репозиторий Jetstack и обновить его:
 ```
@@ -174,14 +174,16 @@ helm repo update
 
 Установить Cert-Manager в отдельный namespace "cert-mamager". Актуальную версию уточнить в [ArtifactHub](https://artifacthub.io/packages/helm/cert-manager/cert-manager):
 
-`helm install cert-manager jetstack/cert-manager --namespace cert-manager --version v1.13.2 --set installCRDs=true` 
-
+```
+helm install cert-manager jetstack/cert-manager --namespace cert-manager --version v1.13.2 --set installCRDs=true
+```
 
 
 Создать объект типа ClusterIssuer, который будет запрашивать сертификаты у LetsEncrypt:
 
-`nano production_issuer.yaml`
-
+```
+nano production_issuer.yaml
+```
 
 
 Заполнить поле "email", на который будут приходить уведомления об окончании срока действия сертификатов:
@@ -208,7 +210,9 @@ spec:
 
 Создать объект в кластере кубернетес:
 
-`kubectl apply -f production_issuer.yaml`
+```
+kubectl apply -f production_issuer.yaml
+```
 
 
 
