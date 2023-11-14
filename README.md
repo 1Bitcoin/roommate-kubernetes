@@ -4,10 +4,12 @@ https://help.reg.ru/support/servery-vps/oblachnyye-servery/ustanovka-programmnog
 
 ### Проблема 1
 
-После установки кластера, будет периодически отвалиться flannel, 
+После установки кластера, будет периодически отвалиться flannel (у всех подов CrashLoopBackOff), 
 на мастер-ноде невозможно выполнить команды, недоступен 6443 порт
 
 Решение
+
+**Это нужно сделать на всех нодах!!!**
 
 ![img.png](readme-png/img-1.png)
 
