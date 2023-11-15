@@ -9,7 +9,7 @@ https://help.reg.ru/support/servery-vps/oblachnyye-servery/ustanovka-programmnog
 
 Решение
 
-**Это нужно сделать на всех нодах!!!**
+**!!! Это нужно сделать на всех нодах !!!**
 
 ![img.png](readme-png/img-1.png)
 
@@ -27,6 +27,8 @@ sudo systemctl restart kubelet
 ![img.png](readme-png/img-2.png)
 
 В примере к name добавляется .DOMAINS и получается неверный адрес
+
+**ВРЕМЕННОЕ РЕШЕНИЕ, работает до перезапуска сервера**
 
 Необходимо удалить строчку из resolv.conf
 
@@ -149,7 +151,7 @@ kubectl apply -f roommate-service.yaml
 kubectl apply -f frontend-service.yaml
 ```
 
-## Установка nginx-ingress и cert-manager
+## Установка nginx-ingress
 
 Перейти в директорию [balancer](balancer)
 
@@ -160,6 +162,10 @@ helm install nginx-ingress ingress-nginx/ingress-nginx --set controller.service.
 
 kubectl apply -f ingress.yaml
 ```
+
+## Установка cert-manager
+
+Перейти в директорию [balancer](balancer)
 
 Создать отдельный namespace для Cert-Manager:
 
@@ -189,8 +195,24 @@ helm install cert-manager jetstack/cert-manager --namespace cert-manager --versi
 kubectl apply -f production_issuer.yaml
 ```
 
+Создать объект типа Certificate. Данные в нем менять не нужно. 
+При необходимости можно добавить еще dnsNames, на которые необходим HTTPS
 
-Отредактировать манифест Ingress, чтобы связать CertManager и ClusterIssuer с хостами Ingress через Annotation: `annotations.cert-manager.io/cluster-issuer: letsencrypt-prod`. Значение `letsencrypt-prod` берется из манифеста `production_issuer.yaml`: `metadata.name`.  
+```
+kubectl apply -f certificate.yaml
+```
+
+
+Отредактировать манифест Ingress, чтобы связать CertManager и ClusterIssuer 
+с хостами Ingress через Annotation: 
+
+`annotations.cert-manager.io/cluster-issuer: letsencrypt-prod`
+
+Значение `letsencrypt-prod` берется из манифеста `production_issuer.yaml`: `metadata.name`.  
+
+Также нужно добавить раздел tls. Данные hosts и secretName нужно подставить из certificate.yaml
+
+Пример правильно настроенного на SSL ingress :
 ```
 apiVersion: networking.k8s.io/v1
 kind: Ingress
