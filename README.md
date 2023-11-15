@@ -256,6 +256,10 @@ spec:
 
 `kubectl describe certificate ingress-roommate-tls`
 
+## Настройка мониторинга для nginx-ingress
+
+TODO
+
 
 ## Режим debug
 
