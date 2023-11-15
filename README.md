@@ -149,7 +149,7 @@ kubectl apply -f roommate-service.yaml
 kubectl apply -f frontend-service.yaml
 ```
 
-## Установка cert-manager
+## Установка nginx-ingress и cert-manager
 
 Перейти в директорию [balancer](balancer)
 
@@ -181,41 +181,13 @@ helm install cert-manager jetstack/cert-manager --namespace cert-manager --versi
 ```
 
 
-Создать объект типа ClusterIssuer, который будет запрашивать сертификаты у LetsEncrypt:
+Создать объект типа ClusterIssuer, который будет запрашивать сертификаты у LetsEncrypt
 
-```
-nano production_issuer.yaml
-```
-
-
-Заполнить поле "email", на который будут приходить уведомления об окончании срока действия сертификатов:
-```
-apiVersion: cert-manager.io/v1
-kind: ClusterIssuer
-metadata:
-  name: letsencrypt-prod
-spec:
-  acme:
-    # Email address used for ACME registration
-    email: your_email_address
-    server: https://acme-v02.api.letsencrypt.org/directory
-    privateKeySecretRef:
-      # Name of a secret used to store the ACME account private key
-      name: letsencrypt-prod-private-key
-    # Add a single challenge solver, HTTP01 using nginx
-    solvers:
-    - http01:
-        ingress:
-          class: nginx
-```
-
-
-Создать объект в кластере кубернетес:
+Заполнить поле "email", на который будут приходить уведомления об окончании срока действия сертификатов
 
 ```
 kubectl apply -f production_issuer.yaml
 ```
-
 
 
 Отредактировать манифест Ingress, чтобы связать CertManager и ClusterIssuer с хостами Ingress через Annotation: `annotations.cert-manager.io/cluster-issuer: letsencrypt-prod`. Значение `letsencrypt-prod` берется из манифеста `production_issuer.yaml`: `metadata.name`.  

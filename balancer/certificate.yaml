@@ -1,0 +1,16 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: roommate-certificate
+  namespace: cert-manager
+spec:
+  secretName: ingress-roommate-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-prod
+  dnsNames:
+    - console-minio.prod.roommate.host
+    - console-pgadmin.prod.roommate.host
+    - api.prod.roommate.host
+    - console-monitoring.prod.roommate.host
+    - dev.roommate.host
