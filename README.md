@@ -269,11 +269,12 @@ helm upgrade --atomic --install release_name ingress-nginx \
 ```
 
 Где
-`release_name` - название релиза
 
-`ingress-nginx` - название чарта helm
-
-`--repo ...` - ссылка на репозиторий чарта
+```
+release_name     #название релиза
+ingress-nginx    #название чарта helm
+--repo           #ссылка на репозиторий чарта
+```
 
 
 ## Режим debug
