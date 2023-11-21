@@ -268,12 +268,12 @@ helm upgrade --atomic --install release_name ingress-nginx \
 --set-string controller.podAnnotations."prometheus\.io/port"="10254"
 ```
 
-Где
-
+Где:
 ```
-release_name     #название релиза
-ingress-nginx    #название чарта helm
---repo           #ссылка на репозиторий чарта
+release_name    # название релиза
+ingress-nginx   # название чарта helm
+--repo          # ссылка на репозиторий чарта
+--atomic        # при неудачной установки релиза будет сделан откат
 ```
 
 
