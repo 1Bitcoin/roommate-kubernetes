@@ -258,7 +258,20 @@ spec:
 
 ## Настройка мониторинга для nginx-ingress
 
-TODO
+Для сбора метрик мониторинга с контроллера nginx необходимо добавить следующие опции при установке релиза через Helm:
+
+```
+helm upgrade --atomic --install release_name ingress-nginx \
+--repo https://kubernetes.github.io/ingress-nginx \
+--set controller.metrics.enabled=true \
+--set-string controller.podAnnotations."prometheus\.io/scrape"="true" \
+--set-string controller.podAnnotations."prometheus\.io/port"="10254"
+```
+
+Где
+`release_name` - название релиза
+`ingress-nginx` - название чарта helm
+`--repo ...` - ссылка на репозиторий чарта
 
 
 ## Режим debug
