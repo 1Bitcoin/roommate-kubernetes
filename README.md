@@ -1,15 +1,42 @@
 ## Установка кластера на чистом железе
 
-https://help.reg.ru/support/servery-vps/oblachnyye-servery/ustanovka-programmnogo-obespecheniya/rukovodstvo-po-kubernetes
+Важно перед настройкой кластера отключить службу systemd-resolved.service, 
+иначе будет проблема с DNS внутри кластера, будет невозможно получить доступ во внешнюю сеть:
 
-### Проблема 1
+При попытке доступа в сеть из кластера (в примере попытка доступа к smtp) может возникнуть проблема из-за неверного dns:
 
-После установки кластера, будет периодически отвалиться flannel (у всех подов CrashLoopBackOff), 
-на мастер-ноде невозможно выполнить команды, недоступен 6443 порт
+![img.png](readme-png/img-2.png)
 
-Решение
+В примере к name добавляется .DOMAINS и получается неверный адрес, 
+при попытке доступа во внешнюю сеть из пода
 
-**!!! Это нужно сделать на всех нодах !!!**
+
+Это происходит из-за файла /run/systemd/resolve/resolv.conf, 
+который создает служба systemd-resolved.service
+
+
+![img.png](readme-png/img-3.png)
+
+**Чтобы этого недопустить нужно выполнить**:
+
+```
+sudo systemctl disable systemd-resolved
+sudo systemctl stop systemd-resolved
+rm  /etc/resolv.conf
+echo 'nameserver 8.8.8.8' >  /etc/resolv.conf
+```
+
+И перезагрузить сервер, чтобы удалился файл /run/systemd/resolve/resolv.conf
+
+```
+reboot
+```
+
+Далее выполнить настройку кластера по инструкции:
+
+**!!! После выполнения шага 9 "Как установить Containerd" нужно изменить конфигурацию 
+/etc/containerd/config.toml, иначе будет отвалиться flannel (у всех подов CrashLoopBackOff),
+на мастер-ноде невозможно выполнить команды, недоступен 6443 порт !!!**
 
 ![img.png](readme-png/img-1.png)
 
@@ -20,29 +47,17 @@ sudo systemctl restart containerd
 sudo systemctl restart kubelet
 ```
 
-### Проблема 2
-
-При попытке доступа в сеть из кластера (в примере попытка доступа к smtp) может возникнуть проблема из-за неверного dns:
-
-![img.png](readme-png/img-2.png)
-
-В примере к name добавляется .DOMAINS и получается неверный адрес
-
-**ВРЕМЕННОЕ РЕШЕНИЕ, работает до перезапуска сервера**
-
-Необходимо удалить строчку из resolv.conf
+Редактор для редактирования конфигураций:
 
 ```
-search DOMAINS
+sudo apt-get install nano
 ```
 
-![img.png](readme-png/img-3.png)
 
-После редактирования сохранить и выполнить:
+Сама инструкция:
 
-```
-sudo systemctl restart kubelet
-```
+https://help.reg.ru/support/servery-vps/oblachnyye-servery/ustanovka-programmnogo-obespecheniya/rukovodstvo-po-kubernetes
+
 
 ## Установка сервисов в кластер
 
@@ -56,9 +71,26 @@ sudo apt-get update
 sudo apt-get install helm
 ```
 
-Перейти в директорию [observability](observability)
+Перейти в директорию 
+
+```
+cd /.
+```
+
+Склонировать репозиторий с k8s манифестами:
+
+```
+git clone https://github.com/1Bitcoin/roommate-kubernetes.git
+```
+
+Перейти в директорию
+
+```
+cd /roommate-kubernetes/observability/pv
+```
 
 Монтируем тома для хранения логов, метрик
+
 
 ```
 kubectl apply -f pv-loki-1.yaml
@@ -67,7 +99,13 @@ kubectl apply -f pv-loki-3.yaml
 kubectl apply -f pv-loki-4.yaml
 ```
 
-Установка подов
+Установка подов grafana и prometheus:
+
+Перейти в директорию
+
+```
+cd /roommate-kubernetes/observability
+```
 
 ```
 helm repo add grafana https://grafana.github.io/helm-charts
@@ -104,27 +142,43 @@ kubectl get secret loki-grafana -o go-template='{{range $k,$v := .data}}{{printf
 helm uninstall loki
 ```
 
-Перейти в директорию [storage](storage)
+Перейти в директорию
+
+```
+cd /roommate-kubernetes/storage
+```
 
 ```
 kubectl apply -f secrets.yaml
 kubectl apply -f postgres-service.yaml
 ```
 
-Перейти в директорию [redis](redis)
+Перейти в директорию
+
+```
+cd /roommate-kubernetes/redis
+```
 
 ```
 kubectl apply -f redis-service.yaml
 ```
 
-Перейти в директорию [pgadmin](pgadmin)
+Перейти в директорию
+
+```
+cd /roommate-kubernetes/pgadmin
+```
 
 ```
 kubectl apply -f secrets.yaml
 kubectl apply -f pgadmin-service.yaml
 ```
 
-Перейти в директорию [other](other)
+Перейти в директорию
+
+```
+cd /roommate-kubernetes/other
+```
 
 ```
 kubectl apply -f bot-secrets.yaml
@@ -132,20 +186,32 @@ kubectl apply -f sender-secrets.yaml
 kubectl apply -f jwt-secrets.yaml
 ```
 
-Перейти в директорию [minio](minio)
+Перейти в директорию
+
+```
+cd /roommate-kubernetes/minio
+```
 
 ```
 kubectl apply -f secrets.yaml
 kubectl apply -f minio-service.yaml
 ```
 
-Перейти в директорию [application](application)
+Перейти в директорию
+
+```
+cd /roommate-kubernetes/application
+```
 
 ```
 kubectl apply -f roommate-service.yaml
 ```
 
-Перейти в директорию [frontend](frontend)
+Перейти в директорию
+
+```
+cd /roommate-kubernetes/frontend
+```
 
 ```
 kubectl apply -f frontend-service.yaml
@@ -153,19 +219,26 @@ kubectl apply -f frontend-service.yaml
 
 ## Установка nginx-ingress
 
-Перейти в директорию [balancer](balancer)
+Перейти в директорию
 
 ```
-helm repo add stable https://charts.helm.sh/stable
-helm repo update
-helm install nginx-ingress ingress-nginx/ingress-nginx --set controller.service.externalIPs[0]=INPUT_EXTERNAL_IP
+cd /roommate-kubernetes/balancer
+```
 
+```
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+helm install ingress-nginx ingress-nginx/ingress-nginx --set controller.service.externalIPs[0]=INPUT_EXTERNAL_IP --set controller.metrics.enabled=true --set-string controller.podAnnotations."prometheus\.io/scrape"="true" --set-string controller.podAnnotations."prometheus\.io/port"="10254"
 kubectl apply -f ingress.yaml
 ```
 
 ## Установка cert-manager
 
-Перейти в директорию [balancer](balancer)
+Перейти в директорию
+
+```
+cd /roommate-kubernetes/balancer
+```
 
 Создать отдельный namespace для Cert-Manager:
 
@@ -254,26 +327,8 @@ spec:
 
 Статус сертификатов можно посмотреть через команду:
 
-`kubectl describe certificate ingress-roommate-tls`
-
-## Настройка мониторинга для nginx-ingress
-
-Для сбора метрик мониторинга с контроллера nginx необходимо добавить следующие опции при установке релиза через Helm:
-
 ```
-helm upgrade --atomic --install release_name ingress-nginx \
---repo https://kubernetes.github.io/ingress-nginx \
---set controller.metrics.enabled=true \
---set-string controller.podAnnotations."prometheus\.io/scrape"="true" \
---set-string controller.podAnnotations."prometheus\.io/port"="10254"
-```
-
-Где:
-```
-release_name    # название релиза
-ingress-nginx   # название чарта helm
---repo          # ссылка на репозиторий чарта
---atomic        # при неудачной установки релиза будет сделан откат
+kubectl describe certificate roommate-certificate
 ```
 
 
