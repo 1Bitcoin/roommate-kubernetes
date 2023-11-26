@@ -285,6 +285,12 @@ kubectl apply -f certificate.yaml
 
 Также нужно добавить раздел tls. Данные hosts и secretName нужно подставить из certificate.yaml
 
+Затем выполнить:
+
+```
+kubectl apply -f ingress.yaml
+```
+
 Пример правильно настроенного на SSL ingress :
 ```
 apiVersion: networking.k8s.io/v1
