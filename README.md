@@ -327,7 +327,6 @@ spec:
             name: service-second
             port:
               number: 80
-              
 ```
 
 
